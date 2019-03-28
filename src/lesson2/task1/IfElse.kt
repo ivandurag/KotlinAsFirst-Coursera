@@ -2,8 +2,14 @@
 package lesson2.task1
 
 import lesson1.task1.discriminant
-import kotlin.math.max
-import kotlin.math.sqrt
+import lesson1.task1.sqr
+import kotlin.math.*
+
+
+fun main(args: Array<String>)
+{
+    triangleKind(4.0,6.0,8.0)
+}
 
 /**
  * Пример
@@ -62,7 +68,13 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String =
+        when {
+            (age %10 == 1) && (age != 11) && (age != 111) -> "$age год"
+            (age %10 in 2..4) && (age !in 12..14) && (age  !in 112..114) -> "$age года"
+            else -> "$age лет"
+        }
+
 
 /**
  * Простая
@@ -73,7 +85,20 @@ fun ageDescription(age: Int): String = TODO()
  */
 fun timeForHalfWay(t1: Double, v1: Double,
                    t2: Double, v2: Double,
-                   t3: Double, v3: Double): Double = TODO()
+                   t3: Double, v3: Double): Double
+{
+    val dist1 = t1 * v1
+    val dist2 = t2 * v2
+    val dist3 = t3 * v3
+    val halfDistance= (dist1 + dist2 + dist3) / 2
+
+    return when {
+        halfDistance <= dist1 -> halfDistance / v1  //середина на 1-ом
+        halfDistance > (dist1 + dist2) -> t1 + t2 + ((halfDistance - dist1 - dist2) / v3)  //середина на 3-ем
+        else -> t1 + ((halfDistance - dist1) / v2)  // середина на 2-ом
+    }
+
+}
 
 /**
  * Простая
@@ -86,7 +111,26 @@ fun timeForHalfWay(t1: Double, v1: Double,
  */
 fun whichRookThreatens(kingX: Int, kingY: Int,
                        rookX1: Int, rookY1: Int,
-                       rookX2: Int, rookY2: Int): Int = TODO()
+                       rookX2: Int, rookY2: Int): Int =
+        when {
+            ((kingX == rookX1) || (kingY == rookY1))
+                    &&
+                    !((kingX == rookX2) || (kingY == rookY2)) -> 1
+
+
+            !((kingX == rookX1) || (kingY == rookY1))
+                    &&
+                    ((kingX == rookX2) || (kingY == rookY2)) -> 2
+
+
+            ((kingX == rookX1) && (kingY == rookY2))
+                    ||
+                    ((kingX == rookX2) && (kingY == rookY1)) -> 3
+
+            else -> 0
+        }
+
+
 
 /**
  * Простая
@@ -100,7 +144,18 @@ fun whichRookThreatens(kingX: Int, kingY: Int,
  */
 fun rookOrBishopThreatens(kingX: Int, kingY: Int,
                           rookX: Int, rookY: Int,
-                          bishopX: Int, bishopY: Int): Int = TODO()
+                          bishopX: Int, bishopY: Int): Int =
+        when {
+            ((kingX == rookX) || (kingY == rookY))
+                    && !(sqr(kingX-bishopX) == sqr(kingY-bishopY)) -> 1
+
+            !((kingX == rookX) || (kingY == rookY))
+                    && (sqr(kingX-bishopX) == sqr(kingY-bishopY)) -> 2
+
+            ((kingX == rookX) || (kingY == rookY))
+                    && (sqr(kingX-bishopX) == sqr(kingY-bishopY)) -> 3
+            else -> 0
+        }
 
 /**
  * Простая
@@ -110,8 +165,24 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
+fun triangleKind(a: Double, b: Double, c: Double): Int
+{
+    if((a < b + c) && (b < a + c) && (c < a + b)) {   //соблюдаем правило сторон треугольника
 
+        //вычисляем углы по правилу косинусов
+        val aU: Double = acos((sqr(b) + sqr(c) - sqr(a)) / (2 * b * c))
+        val bU: Double = acos((sqr(a) + sqr(c) - sqr(b)) / (2 * a * c))
+        val cU: Double = PI - (aU + bU)
+
+        return when{
+            (aU > PI/2 || bU > PI/2 || cU > PI/2) -> 2  //хоть один больше 90 - тупоугольный
+            (aU == PI/2 || bU == PI/2 || cU == PI/2) -> 1 //хоть один 90 - прямоугольный
+            else -> 0 //остроугольный
+        }
+    } else   //не треугольник !!!
+        return -1
+
+}
 /**
  * Средняя
  *
@@ -120,4 +191,11 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int =
+        when {
+            (a >= c) && (b <= d) -> b - a
+            (a <= c) && (b >= d) -> d - c
+            (a <= c) && (b <= d) && (b >= c) -> b - c
+            (a >= c) && (b >= d) && (a <= d) -> d - a
+            else -> -1
+        }
