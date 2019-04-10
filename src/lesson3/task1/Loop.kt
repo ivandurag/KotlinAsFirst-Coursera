@@ -70,7 +70,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  */
 fun digitNumber(n: Int): Int {
     var count = 0
-    var num = n
+    var num = Math.abs(n)
     do {
         count++
         num /= 10
@@ -110,10 +110,6 @@ fun lcm(m: Int, n: Int): Int = when {
     else -> {
         val max = Math.max(m, n)
         val min = Math.min(m, n)
-        /*(2..m * n)
-                .asSequence()
-                .filter { max * it % min == 0 }
-                .first() * max*/
         var res = 0
         for (i in 2..m * n) {
             if ((max * i) % min == 0) {
@@ -167,16 +163,19 @@ fun maxDivisor(n: Int): Int {
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
 fun isCoPrime(m: Int, n: Int): Boolean = when {
+    (m == 1 || n == 1) -> true
     (m % n == 0 || n % m == 0) -> false
     else -> {
         val max = Math.max(m, n)
         val min = Math.min(m, n)
         var res = true
-        for (i in 2..min / 2)
-            if (min % i == 0 && max % i == 0) {
-                res = false
-                break
-            }
+        if (max > 2) {
+            for (i in 2..(min / 2))
+                if (min % i == 0 && max % i == 0) {
+                    res = false
+                    break
+                }
+        }
         res
     }
 }
@@ -234,23 +233,26 @@ fun collatzSteps(x: Int): Int {
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
 fun sin(x: Double, eps: Double): Double {
-    if (x % PI < eps)
-        return 0.0
+    var xX = x
+    if(x > 2 * PI) {
+        xX %= 2 * PI
+    }
     var plus = false
-    var sinus = x
+    var sinus = xX
     var current: Double
     var i = 3
     do {
-        current = Math.pow(x, i.toDouble()) / factorial(i)
+        current = Math.pow(xX, i.toDouble()) / factorial(i)
         if (plus)
             sinus += current
         else
             sinus -= current
         i += 2
         plus = !plus
-    } while (current > eps && -current < -eps)
+    } while (Math.abs(current) > Math.abs(eps))
     return sinus
 }
+
 
 /**
  * Средняя
@@ -260,21 +262,23 @@ fun sin(x: Double, eps: Double): Double {
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
 fun cos(x: Double, eps: Double): Double {
-    if (x % (2 * PI) < eps)
-        return 1.0
+    var xX = x
+    if(x > 2 * PI) {
+        xX %= 2 * PI
+    }
     var plus = false
     var cosinus = 1.0
     var current: Double
     var i = 2
     do {
-        current = Math.pow(x, i.toDouble()) / factorial(i)
+        current = Math.pow(xX, i.toDouble()) / factorial(i)
         if (plus)
             cosinus += current
         else
             cosinus -= current
         i += 2
         plus = !plus
-    } while (current > eps && -current < -eps)
+    }  while (Math.abs(current) > Math.abs(eps))
     return cosinus
 }
 
